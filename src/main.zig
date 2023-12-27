@@ -297,4 +297,6 @@ pub const Vec3 = struct {
 };
 
 // TODO: Tests
-test "vec3" {}
+test "vec3" {
+    _ = Vec3.new(0, 1, 2);
+}
