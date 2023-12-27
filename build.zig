@@ -13,7 +13,7 @@ pub fn build(b: *std.Build, target: CrossTarget, optimize: Mode, comptime path_p
 
     // CGLM
     const glm_files = &[_][]const u8{
-        "./lib/cglm/src/affine.c",
+        path_prefix ++ "/lib/cglm/src/affine.c",
     };
     lib.addIncludePath(.{ .path = path_prefix ++ "/lib/cglm/include" });
     lib.addCSourceFiles(glm_files, &.{});
