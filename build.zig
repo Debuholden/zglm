@@ -3,7 +3,7 @@ const CompileStep = std.build.CompileStep;
 const CrossTarget = std.zig.CrossTarget;
 const Mode = std.builtin.Mode;
 
-pub fn build(b: *std.Build, target: CrossTarget, optimize: Mode) *CompileStep {
+pub fn build(b: *std.Build, target: CrossTarget, optimize: Mode, comptime path_prefix: []const u8) *CompileStep {
     const lib = b.addStaticLibrary(.{
         .name = "zglm",
         .target = target,
@@ -15,7 +15,7 @@ pub fn build(b: *std.Build, target: CrossTarget, optimize: Mode) *CompileStep {
     const glm_files = &[_][]const u8{
         "./lib/cglm/src/affine.c",
     };
-    lib.addIncludePath(.{ .path = "./lib/cglm/include" });
+    lib.addIncludePath(.{ .path = path_prefix ++ "/lib/cglm/include" });
     lib.addCSourceFiles(glm_files, &.{});
     lib.linkLibC();
 
@@ -26,7 +26,7 @@ pub fn build(b: *std.Build, target: CrossTarget, optimize: Mode) *CompileStep {
         .optimize = optimize,
     });
 
-    main_tests.addIncludePath(.{ .path = "./lib/cglm/include" });
+    main_tests.addIncludePath(.{ .path = path_prefix ++ "/lib/cglm/include" });
     main_tests.addCSourceFiles(glm_files, &.{});
     main_tests.linkLibC();
 
