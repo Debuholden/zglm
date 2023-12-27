@@ -1,6 +1,7 @@
 const std = @import("std");
+const CompileStep = std.build.CompileStep;
 
-pub fn build(b: *std.Build) void {
+pub fn build(b: *std.Build) *CompileStep {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
     const lib = b.addStaticLibrary(.{
@@ -19,8 +20,9 @@ pub fn build(b: *std.Build) void {
     lib.addCSourceFiles(glm_files, &.{});
     lib.linkLibC();
 
+    // Tests
     const main_tests = b.addTest(.{
-        .root_source_file = .{ .path = "src/main.zig" },
+        .root_source_file = .{ .path = "src/tests.zig" },
         .target = target,
         .optimize = optimize,
     });
@@ -32,4 +34,6 @@ pub fn build(b: *std.Build) void {
     const run_main_tests = b.addRunArtifact(main_tests);
     const test_step = b.step("test", "Run library tests");
     test_step.dependOn(&run_main_tests.step);
+
+    return lib;
 }
