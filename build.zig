@@ -1,9 +1,9 @@
 const std = @import("std");
 const CompileStep = std.build.CompileStep;
+const CrossTarget = std.zig.CrossTarget;
+const Mode = std.builtin.Mode;
 
-pub fn build(b: *std.Build) *CompileStep {
-    const target = b.standardTargetOptions(.{});
-    const optimize = b.standardOptimizeOption(.{});
+pub fn build(b: *std.Build, target: CrossTarget, optimize: Mode) *CompileStep {
     const lib = b.addStaticLibrary(.{
         .name = "zglm",
         .root_source_file = .{ .path = "src/main.zig" },
