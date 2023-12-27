@@ -14,8 +14,6 @@ pub fn build(b: *std.Build) void {
     // CGLM
     const glm_files = &[_][]const u8{
         "./lib/cglm/src/affine.c",
-        "./lib/cglm/src/vec4.c",
-        "./lib/cglm/src/mat4.c",
     };
     lib.addIncludePath(.{ .path = "./lib/cglm/include" });
     lib.addCSourceFiles(glm_files, &.{});
