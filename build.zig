@@ -6,7 +6,6 @@ const Mode = std.builtin.Mode;
 pub fn build(b: *std.Build, target: CrossTarget, optimize: Mode) *CompileStep {
     const lib = b.addStaticLibrary(.{
         .name = "zglm",
-        .root_source_file = .{ .path = "src/main.zig" },
         .target = target,
         .optimize = optimize,
     });
