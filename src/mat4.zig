@@ -33,6 +33,24 @@ pub const Mat4 = struct {
         };
     }
 
+    // Creates a new identity mat4
+    pub fn newIdentity() Mat4 {
+        var cglm_mat4: c.mat4 align(32) = .{};
+
+        c.glm_mat4_identity(cglm_mat4);
+
+        return cglm_mat4;
+    }
+
+    // Creates a new mat4 with all vales initilized to 0.0 (zero)
+    pub fn newZero() Mat4 {
+        var cglm_mat4: c.mat4 align(32) = .{};
+
+        c.glm_mat4_zero(cglm_mat4);
+
+        return cglm_mat4;
+    }
+
     // Return all members of [src]
     pub fn copy(src: Mat4) Mat4 {
         return @This().new(src.x, src.y, src.z, src.w);
@@ -118,7 +136,7 @@ pub const Mat4 = struct {
     }
 
     // Scale [self] with [scalar] without simd optimizations
-    pub fn scaleScalarP(self: Mat4, scalar: f32) void {
+    pub fn scaleP(self: Mat4, scalar: f32) void {
         c.glm_mat4_scale_p(self._cglm_mat4, scalar);
         self.set();
     }
@@ -127,12 +145,6 @@ pub const Mat4 = struct {
     // NOTE: This is not a scale transform, use zglm.Mat4.scale for that.
     pub fn scaleScalar(self: Mat4, scalar: f32) void {
         c.glm_mat4_scale(self._cglm_mat4, scalar);
-        self.set();
-    }
-
-    // Scale [self] with [scalar]
-    pub fn scale(self: Mat4, scalar: zglm.Vec3) void {
-        c.glm_scale(self._cglm_mat4, scalar);
         self.set();
     }
 
@@ -185,6 +197,139 @@ pub const Mat4 = struct {
     pub fn rmc(self: Mat4, row: zglm.Vec4, col: zglm.Vec4) f32 {
         return c.glm_mat4_rmc(row._cglm_vec4, self._cglm_mat4, col._cglm_vec4);
     }
+
+    // *** 3D Affine transformations *** \\
+
+    // Translate [self] transform matrix by [other]
+    pub fn translate(self: Mat4, other: zglm.Vec3) void {
+        c.glm_translate(self._cglm_mat4, other._cglm_vec3);
+        self.set();
+    }
+
+    // Translate [self] transform matrix by [x] factor
+    pub fn translateX(self: Mat4, x: f32) void {
+        c.glm_translate_x(self._cglm_mat4, x);
+        self.set();
+    }
+
+    // Translate [self] transform matrix by [y] factor
+    pub fn translateY(self: Mat4, y: f32) void {
+        c.glm_translate_y(self._cglm_mat4, y);
+        self.set();
+    }
+
+    // Translate [self] transform matrix by [z] factor
+    pub fn translateZ(self: Mat4, z: f32) void {
+        c.glm_translate_z(self._cglm_mat4, z);
+        self.set();
+    }
+
+    // Creates a new translate transform matrix by [other]
+    pub fn newTranslate(other: zglm.Vec3) Mat4 {
+        var cglm_mat4: c.mat4 align(32) = .{};
+
+        c.glm_translate_make(cglm_mat4, other);
+
+        return cglm_mat4;
+    }
+
+    // Creates a new scale matrix by [other]
+    pub fn newScale(other: zglm.Vec3) Mat4 {
+        var cglm_mat4: c.mat4 align(32) = .{};
+
+        c.glm_mat4_make(cglm_mat4, other);
+
+        return cglm_mat4;
+    }
+
+    // Scale [self] transform matrix by [vec3]
+    pub fn scale(self: Mat4, vec3: zglm.Vec3) void {
+        c.glm_scale(self._cglm_mat4, vec3._cglm_vec3);
+        self.set();
+    }
+
+    // Scale [self] transform matrix by [scalar]
+    pub fn scaleUni(self: Mat4, scalar: f32) void {
+        c.glm_scale_uni(self._cglm_mat4, scalar);
+        self.set();
+    }
+
+    // Rotate transform of [self] around X axis by [angle]
+    pub fn rotateX(self: Mat4, angle: f32) void {
+        var cglm_mat4: c.mat4 align(32) = .{};
+
+        c.glm_rotate_x(self._cglm_mat4, angle, cglm_mat4);
+
+        return cglm_mat4;
+    }
+
+    // Rotate transform of [self] around Y axis by [angle]
+    pub fn rotateY(self: Mat4, angle: f32) void {
+        var cglm_mat4: c.mat4 align(32) = .{};
+
+        c.glm_rotate_y(self._cglm_mat4, angle, cglm_mat4);
+
+        return cglm_mat4;
+    }
+
+    // Rotate transform of [self] around Z axis by [angle]
+    pub fn rotateZ(self: Mat4, angle: f32) void {
+        var cglm_mat4: c.mat4 align(32) = .{};
+
+        c.glm_rotate_z(self._cglm_mat4, angle, cglm_mat4);
+
+        return cglm_mat4;
+    }
+
+    // Creates a new rotation matrix by angle and axis
+    // NOTE: Axis will be normalized
+    pub fn newRotate(angle: f32, axis: zglm.Vec3) Mat4 {
+        var cglm_mat4: c.mat4 align(32) = .{};
+
+        c.glm_rotate_make(cglm_mat4, angle, axis);
+
+        return cglm_mat4;
+    }
+
+    // Rotate transform of [self] around Z axis by [angle] and [axis]
+    pub fn rotate(self: Mat4, angle: f32, axis: zglm.Vec3) void {
+        c.glm_rotate(self._cglm_mat4, angle, axis._cglm_vec3);
+        self.set();
+    }
+
+    // Rotate existing transform around given axis
+    // by angle at given pivot point (rotation center)
+    pub fn rotateAtm(self: Mat4, pivot: zglm.Vec3, angle: f32, axis: zglm.Vec3) void {
+        c.glm_rotate_atm(self._cglm_mat4, pivot._cglm_vec3, angle, axis._cglm_vec3);
+        self.set();
+    }
+
+    // Decompose [p_scale]
+    pub fn decomposeScalev(self: Mat4, p_scale: zglm.Vec3) void {
+        c.glm_decompose_scalev(self._cglm_mat4, p_scale._cglm_vec3);
+        self.set();
+    }
+
+    // Returns true if [self] is uniform scaled
+    pub fn uniscaled(self: Mat4) bool {
+        return c.glm_uniscaled(self._cglm_mat4);
+    }
+
+    // Decompose rotation [self] and [p_scale] [Sx, Sy, Sz]
+    // NOTE:  Don't pass a projected matrix here
+    pub fn decomposeRs(self: Mat4, rotation: Mat4, p_scale: zglm.Vec3) void {
+        c.glm_decompose_rs(self._cglm_mat4, rotation._cglm_mat4, p_scale._cglm_vec3);
+        self.set();
+    }
+
+    // Decompose affine transform
+    // NOTE: Don't pass projected matrix here
+    pub fn decompose(self: Mat4, translation: zglm.Vec4, rotation: Mat4, p_scale: zglm.Vec3) void {
+        c.glm_decompose(self._cglm_mat4, translation._cglm_vec4, rotation._cglm_mat4, p_scale._cglm_vec3);
+        self.set();
+    }
+
+    // TODO: Post functions
 
     fn set(self: Mat4) void {
         self.x._cglm_vec4 = self._cglm_mat4[0];

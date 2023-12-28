@@ -29,6 +29,24 @@ pub const Vec3 = struct {
         };
     }
 
+    // Creates a new Vec3 with all members set to 0.0 (zero)
+    pub fn newZero() Vec3 {
+        var cglm_vec3: c.vec3 align(16) = .{};
+
+        c.glm_vec3_zero(cglm_vec3);
+
+        return cglm_vec3;
+    }
+
+    // Creates a new Vec3 with all members set to 1.0 (one)
+    pub fn newOne() Vec3 {
+        var cglm_vec3: c.vec3 align(16) = .{};
+
+        c.glm_vec3_one(cglm_vec3);
+
+        return cglm_vec3;
+    }
+
     // TODO: Document
     pub fn copyVec4(src: zglm.Vec4) Vec3 {
         return @This().new(src.x, src.y, src.z);

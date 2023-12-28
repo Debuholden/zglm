@@ -33,6 +33,24 @@ pub const Vec4 = struct {
         };
     }
 
+    // Creates a new Vec4 with all members set to 0.0 (zero)
+    pub fn newZero() Vec4 {
+        var cglm_vec4: c.vec3 align(16) = .{};
+
+        c.glm_vec4_zero(cglm_vec4);
+
+        return cglm_vec4;
+    }
+
+    // Creates a new Vec3 with all members set to 1.0 (one)
+    pub fn newOne() Vec4 {
+        var cglm_vec4: c.vec3 align(16) = .{};
+
+        c.glm_vec4_one(cglm_vec4);
+
+        return cglm_vec4;
+    }
+
     // Return the first 3 members of [src] with [w] being initilized to 0
     pub fn copy3(src: zglm.Vec3) Vec4 {
         return @This().new(src.x, src.y, src.z, 0);
