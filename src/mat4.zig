@@ -331,6 +331,40 @@ pub const Mat4 = struct {
 
     // TODO: Post functions
 
+    // Camera
+
+    // Returns a new orthographic projection matrix
+    pub fn newOrtho(left: f32, right: f32, bottom: f32, top: f32, nearVal: f32, farVal: f32) Mat4 {
+        var cglm_mat4: c.mat4 align(32) = .{};
+
+        c.glm_ortho(left, right, bottom, top, nearVal, farVal, cglm_mat4);
+
+        return copy(cglm_mat4);
+    }
+
+    // Returns a new perspective projection matrix
+    pub fn newPerspective(fovy: f32, aspect: f32, nearVal: f32, farVal: f32) Mat4 {
+        var cglm_mat4: c.mat4 align(32) = .{};
+
+        c.glm_perspective(fovy, aspect, nearVal, farVal, cglm_mat4);
+
+        return copy(cglm_mat4);
+    }
+
+    // Setup view matrix
+    pub fn newLookAt(eye: zglm.Vec3, center: zglm.Vec3, up: zglm.Vec3) Mat4 {
+        var cglm_mat4: c.mat4 align(32) = .{};
+
+        c.glm_lookat(eye._cglm_vec3, center._cglm_vec3, up._cglm_vec3, cglm_mat4);
+
+        return copy(cglm_mat4);
+    }
+
+    pub fn lookAt(self: Mat4, eye: zglm.Vec3, center: zglm.Vec3, up: zglm.Vec3) Mat4 {
+        c.glm_lookat(eye._cglm_vec3, center._cglm_vec3, up._cglm_vec3, self._cglm_vec3);
+        self.set();
+    }
+
     fn set(self: Mat4) void {
         self.x._cglm_vec4 = self._cglm_mat4[0];
         self.y._cglm_vec4 = self._cglm_mat4[1];
